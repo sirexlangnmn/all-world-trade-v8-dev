@@ -19,6 +19,8 @@ function uploadBannerV2(inputElementId, validationElementId) {
         error: function (jqXHR, textStatus, errorThrown) {
             if (jqXHR.status === 413) {
                 console.error('Request Entity Too Large');
+                console.log('Request Entity Too Large');
+                Swal.fire('Warning', 'Try to upload file image lower than 2mb', 'warning');
                 // Handle error response
             }
         },
