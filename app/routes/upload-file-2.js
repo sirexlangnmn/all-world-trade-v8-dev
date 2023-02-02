@@ -63,99 +63,75 @@ module.exports = (app) => {
     app.post('/api/v2/multer-sharp-and-sequelize-update-banner', upload.single('companyBanner'), async (req, res) => {
         const file = req.file;
         console.log('upload2 file:', file);
+        res.send('Image uploaded and converted successfully!');
 
-        if (!file) {
-            return res.status(400).json({ message: 'Please upload a file' });
-        } else {
-            const encryptedUuid = req.session.user.uuid;
-            const bytes = CryptoJS.AES.decrypt(encryptedUuid, JWT_SECRET);
-            const originalUuid = bytes.toString(CryptoJS.enc.Utf8);
+        // if (!file) {
+        //     return res.status(400).json({ message: 'Please upload a file' });
+        // } else {
+        //     const encryptedUuid = req.session.user.uuid;
+        //     const bytes = CryptoJS.AES.decrypt(encryptedUuid, JWT_SECRET);
+        //     const originalUuid = bytes.toString(CryptoJS.enc.Utf8);
 
-            console.log('upload2 req.file', req.file);
+        //     console.log('upload2 req.file', req.file);
 
-            const imagePath = path.join(__dirname, '../../', 'public/uploads/users_upload_files/', req.file.filename);
-            const webpImagePath = path.join(
-                __dirname,
-                '../../',
-                'public/uploads/users_upload_files/',
-                req.file.filename.replace(/\.[^/.]+$/, '') + '.webp',
-            );
-          
-            const image = await sharp(imagePath).resize(800, 600).webp().toFile(webpImagePath);
+        //     const imagePath = path.join(__dirname, '../../', 'public/uploads/users_upload_files/', req.file.filename);
+        //     const webpImagePath = path.join(
+        //         __dirname,
+        //         '../../',
+        //         'public/uploads/users_upload_files/',
+        //         req.file.filename.replace(/\.[^/.]+$/, '') + '.webp',
+        //     );
 
-            const newFilename = webpImagePath.split("\\").pop();
-            console.log('upload2 newFilename:', newFilename);
+        //     const image = await sharp(imagePath).resize(800, 600).webp().toFile(webpImagePath);
 
-            const updateObject = {
-                banner: newFilename,
-            };
+        //     const newFilename = webpImagePath.split('\\').pop();
+        //     console.log('upload2 newFilename:', newFilename);
 
-            console.log('upload2 image:', image);
-            console.log('upload2 imagePath:', imagePath);
-            console.log('upload2 webpImagePath:', webpImagePath);
-            console.log('upload2 originalUuid:', originalUuid);
-            console.log('upload2: Image uploaded and converted successfully!');
+        //     const updateObject = {
+        //         banner: newFilename,
+        //     };
 
+        //     console.log('upload2 image:', image);
+        //     console.log('upload2 imagePath:', imagePath);
+        //     console.log('upload2 webpImagePath:', webpImagePath);
+        //     console.log('upload2 originalUuid:', originalUuid);
+        //     console.log('upload2: Image uploaded and converted successfully!');
 
-            let condition = originalUuid ? { uuid: { [Op.like]: `%${originalUuid}%` } } : null;
-            const getRows = await Users_business_medias.findAll({ where: condition })
-                .then((data) => {
-                    return data;
-                })
-                .catch((err) => {
-                    console.log('Some error occurred while retrieving Users_business_medias.');
-                    return 'Some error occurred while retrieving Users_business_medias.';
-                });
+        //     let condition = originalUuid ? { uuid: { [Op.like]: `%${originalUuid}%` } } : null;
+        //     const getRows = await Users_business_medias.findAll({ where: condition })
+        //         .then((data) => {
+        //             return data;
+        //         })
+        //         .catch((err) => {
+        //             console.log('Some error occurred while retrieving Users_business_medias.');
+        //             return 'Some error occurred while retrieving Users_business_medias.';
+        //         });
 
-            console.log('getRows.length', getRows.length);
-            console.log('updateObject', updateObject);
+        //     console.log('getRows.length', getRows.length);
+        //     console.log('updateObject', updateObject);
 
-            // if (getRows.length > 0) {
-            //     updatedRows = await Users_business_medias.update(updateObject, {
-            //         where: { uuid: originalUuid },
-            //     })
-            //         .then((num) => {
-            //             if (num > 0) {
-            //                 console.log('updated successfully');
-            //                 return num;
-            //             } else {
-            //                 console.log('Some error occurred while updating the banner');
-            //             }
-            //         })
-            //         .catch((err) => {
-            //             console.log(
-            //                 'support-links.controller.js exports.create | Error occurred while updating the banners with uuid=' +
-            //                     originalUuid,
-            //             );
-            //         });
-            // } else {
+        //     if (getRows.length > 0) {
+        //         updatedRows = Users_business_medias.update(updateObject, {
+        //             where: { uuid: originalUuid },
+        //         })
+        //             .then((num) => {
+        //                 if (num > 0) {
+        //                     console.log('updated successfully');
+        //                     return num;
+        //                 } else {
+        //                     console.log('Some error occurred while updating the banner');
+        //                 }
+        //             })
+        //             .catch((err) => {
+        //                 console.log(
+        //                     'support-links.controller.js exports.create | Error occurred while updating the banners with uuid=' +
+        //                         originalUuid,
+        //                 );
+        //             });
+        //     } else {
+        //     }
 
-            // }
-
-             if (getRows.length > 0) {
-                updatedRows = Users_business_medias.update(updateObject, {
-                    where: { uuid: originalUuid },
-                })
-                    .then((num) => {
-                        if (num > 0) {
-                            console.log('updated successfully');
-                            return num;
-                        } else {
-                            console.log('Some error occurred while updating the banner');
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(
-                            'support-links.controller.js exports.create | Error occurred while updating the banners with uuid=' +
-                                originalUuid,
-                        );
-                    });
-            } else {
-
-            }
-
-
-            res.send('Image uploaded and converted successfully!');
-        }
+        //     res.send('Image uploaded and converted successfully!');
+        // }
     });
 };
