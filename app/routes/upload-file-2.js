@@ -62,6 +62,8 @@ module.exports = (app) => {
 
     app.post('/api/v2/multer-sharp-and-sequelize-update-banner', upload.single('companyBanner'), async (req, res) => {
         const file = req.file;
+        console.log('upload2 file:', file);
+
         if (!file) {
             return res.status(400).json({ message: 'Please upload a file' });
         } else {
@@ -92,8 +94,9 @@ module.exports = (app) => {
             console.log('upload2 imagePath:', imagePath);
             console.log('upload2 webpImagePath:', webpImagePath);
             console.log('upload2 originalUuid:', originalUuid);
-            // console.log('upload2: Image uploaded and converted successfully!');
-            // res.send('Image uploaded and converted successfully!');
+            console.log('upload2: Image uploaded and converted successfully!');
+
+
             let condition = originalUuid ? { uuid: { [Op.like]: `%${originalUuid}%` } } : null;
             const getRows = await Users_business_medias.findAll({ where: condition })
                 .then((data) => {
@@ -105,9 +108,32 @@ module.exports = (app) => {
                 });
 
             console.log('getRows.length', getRows.length);
+            console.log('updateObject', updateObject);
 
-            if (getRows.length > 0) {
-                updatedRows = await Users_business_medias.update(updateObject, {
+            // if (getRows.length > 0) {
+            //     updatedRows = await Users_business_medias.update(updateObject, {
+            //         where: { uuid: originalUuid },
+            //     })
+            //         .then((num) => {
+            //             if (num > 0) {
+            //                 console.log('updated successfully');
+            //                 return num;
+            //             } else {
+            //                 console.log('Some error occurred while updating the banner');
+            //             }
+            //         })
+            //         .catch((err) => {
+            //             console.log(
+            //                 'support-links.controller.js exports.create | Error occurred while updating the banners with uuid=' +
+            //                     originalUuid,
+            //             );
+            //         });
+            // } else {
+
+            // }
+
+             if (getRows.length > 0) {
+                updatedRows = Users_business_medias.update(updateObject, {
                     where: { uuid: originalUuid },
                 })
                     .then((num) => {
@@ -127,6 +153,8 @@ module.exports = (app) => {
             } else {
 
             }
+
+
             res.send('Image uploaded and converted successfully!');
         }
     });

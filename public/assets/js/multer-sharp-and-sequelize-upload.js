@@ -16,5 +16,11 @@ function uploadBannerV2(inputElementId, validationElementId) {
             console.log(data);
             companyBannerPreview.src = companyBannerPreviewSrc;
         },
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 413) {
+                console.error('Request Entity Too Large');
+                // Handle error response
+            }
+        },
     });
 }
