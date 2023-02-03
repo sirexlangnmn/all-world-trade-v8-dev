@@ -156,7 +156,6 @@ const api_key_secret = process.env.API_KEY_SECRET;
 require('../routes/index.js')(app);
 require('../routes/password.js')(app);
 require('../routes/upload-file.js')(app);
-require('../routes/upload-file-2.js')(app);
 require('../routes/forgot-password.js')(app);
 
 const pdfService = require('../service/pdf-service');
@@ -850,18 +849,14 @@ const updatecompanyBannerMiddleware = upload.fields([{ name: 'image', maxCount: 
 // const storage = multer.memoryStorage();
 // const upload = multer({ storage: storage });
 
-app.post('/upload0', upload.single('image'), async (req, res) => {
-    console.log('upload0 req.file', req.file);
-    // console.log('upload0 res.file.filename', res.file.filename);
-
+app.post('/upload', upload.single('image'), async (req, res) => {
     const imagePath = path.join(__dirname, '../../', 'public/uploads/users_upload_files/', req.file.filename);
-    console.log('upload0 imagePath', imagePath);
-    const image = await sharp(imagePath)
+  const image = await sharp(imagePath)
     .resize(800, 600)
     .webp()
     .toFile(imagePath + '.webp');
     console.log('Image uploaded and converted successfully!');
-    //res.send('upload1: Image uploaded and converted successfully!');
+    //res.send('Image uploaded and converted successfully!');
 });
 
 // app.listen(3000, () => {

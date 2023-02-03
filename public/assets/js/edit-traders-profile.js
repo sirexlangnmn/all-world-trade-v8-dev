@@ -265,7 +265,14 @@ function editcompanyLogo() {
         success: function (data) {
             // some code here
         },
-        error: function (e) {},
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 413) {
+                console.error('Request Entity Too Large');
+                console.log('Request Entity Too Large');
+                Swal.fire('Warning', 'Try to upload file image lower than 1mb', 'warning');
+                // Handle error response
+            }
+        },
     });
 }
 
@@ -288,7 +295,14 @@ function editcompanyBanner() {
         success: function (data) {
             // some code here
         },
-        error: function (e) {},
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 413) {
+                console.error('Request Entity Too Large');
+                console.log('Request Entity Too Large');
+                Swal.fire('Warning', 'Try to upload file image lower than 1mb', 'warning');
+                // Handle error response
+            }
+        },
     });
 }
 

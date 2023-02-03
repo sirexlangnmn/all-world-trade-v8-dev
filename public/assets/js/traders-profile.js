@@ -21,7 +21,7 @@ let tabCompanyDetails;
 let tabMediaFiles;
 let tabVideos;
 let tabSettings;
-let tabPaymentAccount;
+let tabPaymentAccount
 
 let divCompanyDetails;
 let divMediaFiles;
@@ -44,7 +44,6 @@ let displayLanguageOfComm;
 
 let companyLogoPreview;
 let companyBannerPreview;
-let companyBannerPreviewSrc = '';
 let companyLogoId;
 let companyBannerId;
 
@@ -474,14 +473,10 @@ companyLogo.onchange = (evt) => {
 companyBanner.onchange = (evt) => {
     const [file] = companyBanner.files;
     if (file) {
-        updatePreview(file);
-        uploadBannerV2('editcompanyBanner', 'companyBannerValidation');
+        companyBannerPreview.src = URL.createObjectURL(file);
+        editcompanyBanner();
     }
 };
-
-function updatePreview(file) {
-    companyBannerPreviewSrc = URL.createObjectURL(file);
-}
 
 function getLanguageName(string) {
     let data = string.split(',');
@@ -862,7 +857,14 @@ function editcompanyLogo() {
         success: function (data) {
             // some code here
         },
-        error: function (e) {},
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 413) {
+                console.error('Request Entity Too Large');
+                console.log('Request Entity Too Large');
+                Swal.fire('Warning', 'Try to upload file image lower than 1mb', 'warning');
+                // Handle error response
+            }
+        },
     });
 }
 
@@ -885,7 +887,15 @@ function editcompanyBanner() {
         success: function (data) {
             // some code here
         },
-        error: function (e) {},
+        // error: function (e) {},
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 413) {
+                console.error('Request Entity Too Large');
+                console.log('Request Entity Too Large');
+                Swal.fire('Warning', 'Try to upload file image lower than 1mb', 'warning');
+                // Handle error response
+            }
+        },
     });
 }
 
@@ -905,6 +915,7 @@ function createCommunicatorLink() {
 }
 
 function editProfile() {
+    // location.replace(host + '/edit-traders-profile');
     location.href = '/edit-traders-profile';
 }
 
