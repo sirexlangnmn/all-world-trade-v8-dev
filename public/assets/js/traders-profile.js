@@ -884,6 +884,7 @@ function editcompanyBanner() {
         contentType: false,
         cache: false,
         timeout: 800000,
+        async: true,
         success: function (data) {
             // some code here
         },

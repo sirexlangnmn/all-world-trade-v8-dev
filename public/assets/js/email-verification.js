@@ -104,6 +104,7 @@ function verifyCode(e) {
                 }, 3000);
             } else {
                 console.log('not_verify');
+                Swal.fire('Warning', 'Verification code does not match our record', 'warning');
             }
         },
     });
@@ -118,6 +119,14 @@ function resendVerificationCode() {
     $.ajax({
         url: '/api/post/resend-email-verification',
         type: 'POST',
-        success: function (res) {},
+        success: function (res) {
+            console.log(res);
+            if (res === 'email sent') {
+                Swal.fire('Success', 'Email verification resend successfully.', 'success');
+            } else {
+                Swal.fire('Warning', 'Email verification resend failed.', 'warning');
+            }
+            
+        },
     });
 }

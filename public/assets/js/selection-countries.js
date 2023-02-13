@@ -302,6 +302,9 @@ document.addEventListener(
 );
 
 function has_class(elem, className) {
+    console.log('elem', elem);
+    console.log('className', className);
+    console.log('elem.className.split', elem.className.split(' ').indexOf(className) > -1);
     return elem.className.split(' ').indexOf(className) > -1;
 }
 

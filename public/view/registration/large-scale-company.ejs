@@ -15,12 +15,12 @@
 
       <div class="mcontainer">
         <form action="javascript:void(0);" method="POST" id="traderRegistrationForm" name="traderRegistrationForm" enctype="multipart/form-data" accept-charset="utf-8">
-          <div class="profile is_page">
+          <div class="profile ">
             <div class="profiles_banner profile_avatar image-upload">
               <label for="companyBanner">
                 <img id="companyBannerPreview" src="uploads/placeholder/banner-placeholder2.jpg" />
               </label>
-              <input type="file" id="companyBanner" name="companyBanner" />
+              <input type="file" id="companyBanner" name="companyBanner" accept=".jpg, .png, .jpg" />
             </div>
             <p class="text-red-500" style="text-align: center;" id="companyBannerValidation"></p>
             <div class="profiles_content">
@@ -28,11 +28,11 @@
                 <label for="companyLogo">
                   <img id="companyLogoPreview" src="uploads/placeholder/logo-placeholder2.jpg" />
                 </label>
-                <input type="file" id="companyLogo" name="companyLogo" />
-                <p class="text-red-500" style="text-align: center; margin-top: -18px" id="companyLogoValidation"></p>
+                <input type="file" id="companyLogo" name="companyLogo" accept=".jpg, .png, .jpg" />
+                <p class="text-red-500" style="text-align: center; " id="companyLogoValidation"></p>
               </div>
               <div class="profile_info">
-                <h1 class="orbitron">Members Looking For Large Scale Company</h1>
+                <h1 class="orbitron">Visitor Members Looking For Large Scale Company</h1>
                 <h1 class="orbitron">(Exhaustive Company Information)</h1>
               </div>
             </div>
@@ -307,6 +307,7 @@
   <script  src="assets/js/large-scale-company-registration.js"></script>
   <script  src="assets/js/large-scale-company-registration-upload-medias.js"></script>
   <script  src="assets/js/registration-email-verification.js"></script>
+  <script src="assets/js/media-validation.js"></script>
 
 </body>
 

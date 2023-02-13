@@ -48,24 +48,12 @@ const cookieSession = require('cookie-session');
 const path = require('path');
 const app = express();
 
-// let corsOptions = {
-//     origin: "dev.allworldtrade.com"
-// };
 
-//app.use(cors(corsOptions));
-
-app.use(
-    cors({
-        origin: [
-            'https://allworldtrade.com',
-            'https://dev.allworldtrade.com',
-            'http://localhost:3000/',
-            'https://meet.allworldtrade.com',
-            'https://meet2.allworldtrade.com',
-        ],
-    }),
-);
-//app.use(cors()); // Enable All CORS Requests for all origins
+// Enable All CORS Requests for all origins
+app.use(cors({
+    origin: ['http://localhost:3000', 'https://allworldtrade.com', 'https://dev.allworldtrade.com', 'https://meet.allworldtrade.com', 'https://meet2.allworldtrade.com'],
+    credentials: true
+}));
 
 app.use(compression()); // Compress all HTTP responses using GZip
 
@@ -97,37 +85,11 @@ let { lodashNonce } = require("../middleware/nonces");
 
 
 app.use(function (req, res, next) {
-    // let location_hostname = req.hostname;
-    // let host = '';
-    // if (location_hostname === 'localhost') {
-    //     host = 'http://' + location_hostname + ':' + 3000;
-    // }
-    // if (location_hostname === 'allworldtrade.com' || location_hostname.endsWith('.allworldtrade.com') || location_hostname === 'meet.allworldtrade.com' || location_hostname === 'meet2.allworldtrade.com') {
-    //     host = 'https://' + location_hostname;
-    // }
-
-    const corsWhitelist = [
-        'http://localhost:3000/',
-        'https://meet.allworldtrade.com',
-        'https://meet2.allworldtrade.com',
-        'https://allworldtrade.com',
-        'https://dev.allworldtrade.com',
-    ];
-
-    //console.log('check: ', 'Content-Security-Policy-Report-Only', "font-src 'self' https://fonts.gstatic.com; img-src 'self'; script-src 'self' https://code.jquery.com/jquery-3.6.0.min.js https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.3.0/sweetalert2.min.js https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js https://unpkg.com/ionicons@5.2.3/dist/ionicons.js 'nonce-" + lodashNonce +"'; frame-ancestors 'self'; frame-src 'self'");
-    if (corsWhitelist.indexOf(req.headers.origin) !== -1) {
-        res.header('Access-Control-Allow-Origin', req.headers.origin);
-        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    const allowedOrigins = ['http://localhost:3000', 'https://allworldtrade.com', 'https://dev.allworldtrade.com', 'https://meet.allworldtrade.com', 'https://meet2.allworldtrade.com'];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
     }
-
-    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-    // res.setHeader('Content-Security-Policy', "frame-ancestors 'self'; frame-src 'self'");
-    // res.setHeader(
-    //     'Content-Security-Policy-Report-Only', "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/orbitron/v25/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6BoWgz.woff2; img-src 'self'; script-src 'self' 'nonce-" + lodashNonce +"' ; style-src 'self' 'nonce-" + lodashNonce +"' https://fonts.googleapis.com; frame-ancestors 'self'; form-action 'self'; frame-src 'self'",
-    // );
-    
-    res.setHeader('X-Frame-Options', 'sameorigin');
-
     next();
 });
 
@@ -514,77 +476,66 @@ app.get(['/download-current-visitor-data'], (req, res) => {
 
 app.get(['/download-current-trader-data'], (req, res) => {
     const sessionData = req.session;
-    let businessName, businessWebsite, businessEmail, businessContact, businessAddress;
-    let tradeCategory,
-        businessSubCategory,
-        businessSubCategoryStr,
-        businessMinorsubCategoryStr,
-        businessMinorsubCategory,
-        tags,
-        businessScale;
-    let traderCountryCode, visitorStateCode, visitorCityCode, countries, states, cities, country, state, city;
-    let regionOfOperation, countryOfOperation, statesOfOperation;
+    const sessionDataItems = sessionData.items
 
-    countries = JSON.parse(countriesData);
-    states = JSON.parse(statesData);
-    cities = JSON.parse(citiesData);
+    const currentTraderCategoryItem = sessionDataItems.find(item => item.current_trader_major_category);
+    const currentTraderSubCategoryItem = sessionDataItems.find(item => item.current_trader_sub_category);
+    const currentTraderMinorSubCategoryItem = sessionDataItems.find(item => item.current_trader_minor_sub_category);
 
-    traderCountryCode = sessionData.current_trader.business_country;
-    visitorStateCode = sessionData.current_trader.business_states;
-    visitorCityCode = sessionData.current_trader.business_city;
-    country = traderCountryCode ? countries.filter((d) => d.iso2 == traderCountryCode) : 'N/A';
-    state = visitorStateCode ? states.filter((d) => d.id == visitorStateCode) : 'N/A';
-    city = visitorCityCode ? cities.filter((d) => d.id == visitorCityCode) : 'N/A';
+    const currentTraderCategory = currentTraderCategoryItem ? currentTraderCategoryItem.current_trader_major_category : '';
+    const currentTraderSubCategory = currentTraderSubCategoryItem ? currentTraderSubCategoryItem.current_trader_sub_category : '';
+    const currentTraderMinorSubCategory = currentTraderMinorSubCategoryItem ? currentTraderMinorSubCategoryItem.current_trader_minor_sub_category : '';
+    
+    
+    console.log('download-current-trader-data sessionData.items: ', sessionData);
+    console.log('download-current-trader-data sessionData.items: ', sessionData.items);
+    console.log('download-current-trader-data currentTraderCategory: ', currentTraderCategory);
+    console.log('download-current-trader-data currentTraderSubCategory: ', currentTraderSubCategory);
+    console.log('download-current-trader-data currentTraderMinorSubCategory: ', currentTraderMinorSubCategory);
 
-    businessName = sessionData.current_trader.business_name;
-    businessWebsite = sessionData.current_trader.business_website;
-    businessEmail = sessionData.current_trader.business_email;
-    businessContact = sessionData.current_trader.business_contact;
-    businessAddress = sessionData.current_trader.business_address;
-
-    tradeCategory = sessionData.current_trader_major_category;
-
-    businessSubCategoryStr = sessionData.current_trader_business_characteristics.business_sub_category_str;
-    businessSubCategory = sessionData.current_trader_sub_category;
-    businessSubCategory = businessSubCategory ? businessSubCategory : businessSubCategoryStr;
-
-    businessMinorsubCategoryStr = sessionData.current_trader_business_characteristics.business_minor_sub_category_str;
-    businessMinorsubCategory = sessionData.current_trader_minor_sub_category;
-    businessMinorsubCategory = businessMinorsubCategory ? businessMinorsubCategory : businessMinorsubCategoryStr;
-
-    tags = sessionData.current_trader_business_characteristics.business_industry_belong_to;
-    tags = tags ? formattingBusinessTags(tags) : 'N/A';
-    businessScale = sessionData.current_trader_business_characteristics.business_scale;
-    businessScale = businessScale ? formattingBusinessScale(businessScale) : 'N/A';
-
-    regionOfOperation = sessionData.current_trader.region_of_operation;
-    regionOfOperation = regionOfOperation ? formattingBusinessTags(regionOfOperation) : 'N/A';
-    countryOfOperation = sessionData.current_trader.country_of_operation;
-    countryOfOperation = countryOfOperation ? formattedCountryOfOperation(countryOfOperation, countriesData) : 'N/A';
-    statesOfOperation = sessionData.current_trader.states_of_operation;
-    statesOfOperation = statesOfOperation ? states.filter((d) => d.id == statesOfOperation) : 'N/A';
-
-    let date_created = sessionData.current_trader_date_created;
-
+    const countries = JSON.parse(countriesData);
+    const states = JSON.parse(statesData);
+    const cities = JSON.parse(citiesData);
+    const traderCountryCode = sessionData.current_trader.business_country;
+    const visitorStateCode = sessionData.current_trader.business_states;
+    const visitorCityCode = sessionData.current_trader.business_city;
+    const country = traderCountryCode ? countries.filter(d => d.iso2 == traderCountryCode)[0].name : 'N/A';
+    const state = visitorStateCode ? states.filter(d => d.id == visitorStateCode)[0].name : 'N/A';
+    const city = visitorCityCode ? cities.filter(d => d.id == visitorCityCode)[0].name : 'N/A';
+    const businessName = sessionData.current_trader.business_name;
+    const businessWebsite = sessionData.current_trader.business_website;
+    const businessEmail = sessionData.current_trader.business_email;
+    const businessContact = sessionData.current_trader.business_contact;
+    const businessAddress = sessionData.current_trader.business_address;
+    const tags = sessionData.current_trader_business_characteristics.business_industry_belong_to;
+    const businessScale = sessionData.current_trader_business_characteristics.business_scale;
+    const regionOfOperation = sessionData.current_trader.region_of_operation;
+    const countryOfOperation = sessionData.current_trader.country_of_operation;
+    const statesOfOperation = sessionData.current_trader.states_of_operation;
+    const date_created = sessionData.current_trader_date_created;
+   
     const traderData = {
         business_name: businessName,
         business_website: businessWebsite,
         business_email: businessEmail,
         business_contact: businessContact,
         business_address: businessAddress,
-        business_country: country[0].name,
-        business_states: state[0].name,
-        business_city: city[0].name,
-        trade_categories: tradeCategory,
-        sub_categories: businessSubCategory,
-        minor_sub_categories: businessMinorsubCategory,
-        tags: tags,
-        businessScale: businessScale,
-        region_of_operation: regionOfOperation,
-        country_of_operation: countryOfOperation,
-        state_of_operation: statesOfOperation[0].name,
+        business_country: country,
+        business_states: state,
+        business_city: city,
+        trade_categories: currentTraderCategory,
+        sub_categories: currentTraderSubCategory,
+        minor_sub_categories: currentTraderMinorSubCategory,
+        tags: formattingBusinessTags(tags) || 'N/A',
+        businessScale: formattingBusinessScale(businessScale) || 'N/A',
+        region_of_operation: formattingBusinessTags(regionOfOperation) || 'N/A',
+        country_of_operation: formattedCountryOfOperation(countryOfOperation, countriesData) || 'N/A',
+        state_of_operation: statesOfOperation ? states.filter(d => d.id == statesOfOperation)[0].name : 'N/A',
         date_created: date_created,
     };
+
+    // console.log('pdfServiceForTrader traderData: ', traderData);
+    // console.log('pdfServiceForTrader sessionData: ', sessionData);
 
     const stream = res.writeHead(200, {
         'Content-Type': 'application/pdf',
@@ -809,6 +760,15 @@ app.get(['/multer-sharp-and-sequelize-test'], (req, res) => {
         ourGenerateNonce: lodashNonce,
     };
     res.render(path.join(__dirname, '../../', 'public/view/profile/multer-sharp-and-sequelize-test'), {
+        data: sessionData,
+    });
+});
+
+app.get(['/test-slides'], (req, res) => {
+    const sessionData = {
+        ourGenerateNonce: lodashNonce,
+    };
+    res.render(path.join(__dirname, '../../', 'public/view/test/slides'), {
         data: sessionData,
     });
 });

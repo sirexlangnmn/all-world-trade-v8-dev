@@ -1,4 +1,5 @@
 module.exports = (app) => {
+    const db = require('../models/db.js');
     const USERS_ACCOUNTS = require('../query/users_accounts.query.js');
     const RESET_TOKENS = require('../query/reset_tokens.query.js');
 
@@ -18,19 +19,19 @@ module.exports = (app) => {
     const AWT_HOSTNAME = process.env.AWT_HOSTNAME;
 
     // Database connection
-    const db = mysql.createConnection({
-        host: process.env.DB_SERVERHOST,
-        user: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-    });
+    // const db = mysql.createConnection({
+    //     host: process.env.DB_SERVERHOST,
+    //     user: process.env.DB_USERNAME,
+    //     password: process.env.DB_PASSWORD,
+    //     database: process.env.DB_NAME,
+    // });
 
-    db.connect(function (err) {
-        if (err) {
-            return console.error('error: ' + err.message);
-        }
-        console.log('Connected to the MySQL server.');
-    });
+    // db.connect(function (err) {
+    //     if (err) {
+    //         return console.error('error: ' + err.message);
+    //     }
+    //     console.log('Connected to the MySQL server.');
+    // });
 
     app.get(['/forgot-password'], (req, res) => {
         res.render(path.join(__dirname, '../../', 'public/view/forgot-password/index'));
@@ -166,6 +167,9 @@ module.exports = (app) => {
         let decoded = decodeURIComponent(token);
         let bytes = CryptoJS.AES.decrypt(decoded, SECRET);
         let originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+        console.log('decoded', decoded);
+        console.log('EMAIL', EMAIL);
 
         var email = await User({ where: { email: EMAIL } });
 

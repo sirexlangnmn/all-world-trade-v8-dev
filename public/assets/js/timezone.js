@@ -1,110 +1,73 @@
-function calculateTimeZone(traderTimeOfOperation, traderUtc, viewerUtc) {
-    // NOTE: UTC default value is 12:00
-    // time zone offset like this +08:00 meaning add 8 hours from utc default value
-    // time zone offset like this -08:00 meaning subtract 8 hours from utc default value
-    let logicalOperator = timezoneLogicalOperator(traderUtc, viewerUtc);
-    const UTC = '12:00';
+function convertTimeToInternationalStart(time, country, targetTimezone) {
+    if (!time) return;
 
-    let outputTime;
-    if (logicalOperator === '1') {
-        if (timeToMins(traderUtc) > timeToMins(traderTimeOfOperation)) {
-            let x = subtractTimes(traderUtc, traderTimeOfOperation);
-            outputTime = addTimes(viewerUtc, x);
-        }
-
-        if (timeToMins(traderTimeOfOperation) > timeToMins(traderUtc)) {
-            let x = subtractTimes(traderTimeOfOperation, traderUtc);
-            outputTime = addTimes(traderTimeOfOperation, x);
-        }
-    }
-    if (logicalOperator === '2') {
-        // things to do. Kunin ko lang yung difference ng utc between trader at viewer. Then add or subtract to trader operating hour
-        if (timeToMins(traderUtc) > timeToMins(traderTimeOfOperation)) {
-            let x = subtractTimes(traderUtc, traderTimeOfOperation);
-            let utcMinusViewerUtc = timeToMins(UTC) - Math.abs(timeToMins(viewerUtc));
-
-            let newViewerUtc;
-            if (utcMinusViewerUtc < 12) {
-                newViewerUtc = utcMinusViewerUtc + timeToMins('12:00');
-            }
-            // outputTime = addTimes(viewerUtc, x);
-            console.log(newViewerUtc);
-        }
+    const timeArr = time.split(':');
+    if (timeArr.length !== 2) {
+        throw new Error(`Invalid time format: ${time}`);
     }
 
-    return outputTime;
-}
-
-console.log(calculateTimeZone('08:00', '+08:01', '+04:30'));
-
-// Convert a time in hh:mm format to minutes
-function timeToMins(time) {
-    var b = time.split(':');
-    return b[0] * 60 + +b[1];
-}
-
-// Convert minutes to a time in format hh:mm
-// Returned value is in range 00  to 24 hrs
-function timeFromMins(mins) {
-    function z(n) {
-        return (n < 10 ? '0' : '') + n;
-    }
-    var h = ((mins / 60) | 0) % 24;
-    var m = mins % 60;
-    return z(h) + ':' + z(m);
-}
-
-// Add two times in hh:mm format
-function addTimes(t0, t1) {
-    return timeFromMins(timeToMins(t0) + timeToMins(t1));
-}
-
-// Subtract two times in hh:mm format
-function subtractTimes(t0, t1) {
-    return timeFromMins(timeToMins(t0) - timeToMins(t1));
-}
-
-function timezoneLogicalOperator(traderUtc, viewerUtc) {
-    let traderUtcAlpha = '';
-    let traderUtcNum = '';
-    let traderUtcSpecial = '';
-    for (let i = 0; i < traderUtc.length; i++) {
-        if (!isNaN(String(traderUtc[i]) * 1)) traderUtcNum += traderUtc[i];
-        else if ((traderUtc[i] >= 'A' && str[i] <= 'Z') || (traderUtc[i] >= 'a' && traderUtc[i] <= 'z'))
-            traderUtcAlpha += traderUtc[i];
-        else traderUtcSpecial += traderUtc[i];
+    const [hours, minutes] = timeArr.map(val => parseInt(val, 10));
+    if (isNaN(hours) || isNaN(minutes)) {
+        throw new Error(`Invalid time format: ${time}`);
     }
 
-    let viewerUtcAlpha = '';
-    let viewerUtcNum = '';
-    let viewerUtcSpecial = '';
-    for (let i = 0; i < viewerUtc.length; i++) {
-        if (!isNaN(String(viewerUtc[i]) * 1)) viewerUtcNum += viewerUtc[i];
-        else if ((viewerUtc[i] >= 'A' && str[i] <= 'Z') || (viewerUtc[i] >= 'a' && viewerUtc[i] <= 'z'))
-            viewerUtcAlpha += viewerUtc[i];
-        else viewerUtcSpecial += viewerUtc[i];
+    let tzoffset = 0;
+
+    switch (targetTimezone) {
+        case 'UTC': tzoffset = 0; break;
+        case 'EST': tzoffset = -300; break;
+        case 'CST': tzoffset = -360; break;
+        case 'MST': tzoffset = -420; break;
+        case 'PST': tzoffset = -480; break;
     }
 
-    let status;
-    if (traderUtcSpecial == '+:' && viewerUtcSpecial == '+:') {
-        status = '1';
-    }
-    if (traderUtcSpecial == '+:' && viewerUtcSpecial == '-:') {
-        status = '2';
+    switch (country) {
+        case 'Philippines': tzoffset -= 480; break;
     }
 
-    return status;
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes + tzoffset);
+
+    return date.toLocaleTimeString().slice(0, 5);
+}
+function convertTimeToInternationalEnd(time, country, targetTimezone) {
+    if (!time) return;
+
+    const timeArr = time.split(':');
+    if (timeArr.length !== 2) {
+        throw new Error(`Invalid time format: ${time}`);
+    }
+
+    const [hours, minutes] = timeArr.map(val => parseInt(val, 10));
+    if (isNaN(hours) || isNaN(minutes)) {
+        throw new Error(`Invalid time format: ${time}`);
+    }
+
+    let tzoffset = 0;
+
+    switch (targetTimezone) {
+        case 'UTC': tzoffset = 0; break;
+        case 'EST': tzoffset = -300; break;
+        case 'CST': tzoffset = -360; break;
+        case 'MST': tzoffset = -420; break;
+        case 'PST': tzoffset = -480; break;
+    }
+
+    switch (country) {
+        case 'Philippines': tzoffset -= 480; break;
+    }
+
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes + tzoffset);
+
+    return date.toLocaleTimeString().slice(0, 5);
 }
 
-function calcTime(city, offset) {
-    var b = new Date();
-    var utc = b.getTime() + b.getTimezoneOffset() * 60000;
-    var nd = new Date(utc + 3600000 * offset);
-    return 'the local time of ' + city + ' is' + nd.toLocaleString();
-}
 
-//get specific country time
-// console.log(calcTime('argentina', '-3'));
-// console.log(calcTime('afganistan', '+4.3'));
-// console.log(calcTime('Denmark', '+2'));
-// console.log(calcTime('japan', '+9'));
+//// Example usage
+//   const localTime = "23:00";
+//   const country = "Philippines";
+//   const targetTimezone = "UTC";
+//   console.log(convertTimeToInternational(localTime, country, targetTimezone));

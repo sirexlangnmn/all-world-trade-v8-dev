@@ -56,6 +56,7 @@ companyLogo.onchange = (evt) => {
         companyLogoValidation.innerHTML = '';
         companyLogoPreview.src = URL.createObjectURL(file);
     }
+    uploadCompanyMediaValidation('companyLogo', companyLogoValidation);
 };
 
 companyBanner.onchange = (evt) => {
@@ -65,6 +66,7 @@ companyBanner.onchange = (evt) => {
         companyBannerValidation.innerHTML = '';
         companyBannerPreview.src = URL.createObjectURL(file);
     }
+    uploadCompanyMediaValidation('companyBanner', companyBannerValidation);
 };
 
 function registrationClientValidation() {

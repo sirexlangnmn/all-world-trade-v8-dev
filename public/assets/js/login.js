@@ -10,7 +10,8 @@ function loginSubmitHandler(e) {
         data: formLogin.serialize(),
         success: function (res) {
             if (res.message === 'found') {
-                window.location.replace('/profile');
+                // window.location.replace('/profile');
+                window.location.replace('/selection');
             } else if (res.message !== 'found') {
                 Swal.fire('Error', res.message, 'error');
             } else {
