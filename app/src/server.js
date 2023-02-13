@@ -755,11 +755,11 @@ app.get(['/file-and-input-test'], (req, res) => {
 });
 
 
-app.get(['/multer-sharp-and-sequelize-test'], (req, res) => {
+app.get(['/test-multer-sharp-and-sequelize'], (req, res) => {
     const sessionData = {
         ourGenerateNonce: lodashNonce,
     };
-    res.render(path.join(__dirname, '../../', 'public/view/profile/multer-sharp-and-sequelize-test'), {
+    res.render(path.join(__dirname, '../../', 'public/view/test/multer-sharp-and-sequelize-test'), {
         data: sessionData,
     });
 });
@@ -815,9 +815,10 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     .resize(800, 600)
     .webp()
     .toFile(imagePath + '.webp');
-    console.log('Image uploaded and converted successfully!');
+    console.log('/upload Image uploaded and converted successfully!');
     //res.send('Image uploaded and converted successfully!');
 });
+
 
 // app.listen(3000, () => {
 //   console.log('Server listening on port 3000');
