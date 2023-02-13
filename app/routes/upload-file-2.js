@@ -1,43 +1,47 @@
-const express = require('express');
-const multer = require('multer');
-const sharp = require('sharp');
-const { Sequelize } = require('sequelize');
-
-const app = express();
-const upload = multer({ dest: 'uploads/' });
-
-const sequelize = new Sequelize('database', 'username', 'password', {
-  host: 'localhost',
-  dialect: 'sqlite',
-  storage: './database.sqlite'
-});
-
-const Image = sequelize.define('image', {
-  name: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  data: {
-    type: Sequelize.BLOB('long'),
-    allowNull: false
-  }
-});
-
-app.post('/upload-image', upload.single('image'), async (req, res) => {
-  const imageBuffer = await sharp(req.file.buffer)
-    .toFormat('webp', { quality: 80 })
-    .toBuffer();
-
-  await Image.create({
-    name: req.file.originalname,
-    data: imageBuffer
+module.exports = app => {
+  const multer = require('multer');
+  
+  // const storage = multer.diskStorage({
+  //   destination: function (req, file, cb) {
+  //     cb(null, 'uploads/');
+  //   },
+  //   filename: function (req, file, cb) {
+  //     cb(null, file.fieldname + '-' + Date.now());
+  //   }
+  // });
+  
+  // const upload = multer({ storage: storage });
+  
+   //! Use of Multer
+   const storage = multer.diskStorage({
+    destination: (req, file, callBack) => {
+        callBack(null, './public/uploads/users_upload_files/'); // './public/images/' directory name where save the file
+    },
+    filename: (req, file, callBack) => {
+        callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    },
   });
-
-  res.send('Image uploaded, converted to WebP, and stored in the database');
-});
-
-sequelize.sync().then(() => {
-  app.listen(3000, () => {
-    console.log('Server listening on port 3000');
+  
+  const upload = multer({
+    storage: storage,
   });
-});
+  
+  
+  // app.post('/test/two-file-and-text-input-multer-sharp-sequelize', upload.array('files', 2), (req, res) => {
+  //   console.log('upload-file-2.js')
+  //   console.log('Text 1: ', req.body.text1);
+  //   console.log('Text 2: ', req.body.text2);
+  
+  //   req.files.forEach((file) => {
+  //     console.log(file.fieldname + ': ', file.path);
+  //   });
+  
+  //   res.send('Form data received and files uploaded!');
+  // });
+  
+
+  
+};
+
+
+

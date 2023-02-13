@@ -118,6 +118,7 @@ const api_key_secret = process.env.API_KEY_SECRET;
 require('../routes/index.js')(app);
 require('../routes/password.js')(app);
 require('../routes/upload-file.js')(app);
+require('../routes/upload-file-2.js')(app);
 require('../routes/forgot-password.js')(app);
 
 const pdfService = require('../service/pdf-service');
@@ -760,6 +761,16 @@ app.get(['/test-multer-sharp-and-sequelize'], (req, res) => {
         ourGenerateNonce: lodashNonce,
     };
     res.render(path.join(__dirname, '../../', 'public/view/test/multer-sharp-and-sequelize-test'), {
+        data: sessionData,
+    });
+});
+
+
+app.get(['/test/two-file-and-text-input-multer-sharp-sequelize'], (req, res) => {
+    const sessionData = {
+        ourGenerateNonce: lodashNonce,
+    };
+    res.render(path.join(__dirname, '../../', 'public/view/test/two-file-and-text-input-multer-sharp-sequelize'), {
         data: sessionData,
     });
 });

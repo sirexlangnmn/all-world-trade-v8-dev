@@ -1873,4 +1873,16 @@ module.exports = (app) => {
             // res.render('Email has been sent');
         });
     });
+
+    app.post('/test/two-file-and-text-input-multer-sharp-sequelize', upload.array('files', 2), (req, res) => {
+        console.log('upload-file-2.js')
+        console.log('Text 1: ', req.body.text1);
+        console.log('Text 2: ', req.body.text2);
+      
+        req.files.forEach((file) => {
+          console.log(file.fieldname + ': ', file.path);
+        });
+      
+        res.send('Form data received and files uploaded!');
+      });
 };
